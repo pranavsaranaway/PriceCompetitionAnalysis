@@ -2,6 +2,7 @@ import streamlit as st
 from src.oxylabs_client import scrape_product_details
 from src.services import scrape_and_store_product, fetch_and_store_competitors
 from src.db import Database
+from src.llm import analyze_competitors
 
 def render_header():
     st.title("Amazon Compeittive Analysis Tool")
@@ -10,7 +11,7 @@ def render_header():
 def render_inputs():
     asin = st.text_input("Enter ASIN:", placeholder="e.g., B08N5WRWNW")
     geo = st.text_input("Zip/Postal Code:", placeholder="e.g., 10001")
-    domain = st.selectbox("Domain:", options=["com", "ca", "co.uk", "de", "fr", "it", "es", "in", "jp", "mx", "au"])
+    domain = st.selectbox("Domain:", options=["com", "ca", "co.uk", "de", "fr", "it", "es", "in", "jp", "mx", "au", "ae"])
     return asin.strip(), geo.strip(), domain
 
 def render_product_card(product):
@@ -102,7 +103,8 @@ def main():
         with col1:
             if st.button("Analyse with LLM", type="primary"):
                 with st.spinner("Analyzing with LLM..."):
-                    st.text("analysis")
+                    analysis = analyze_competitors(selected_asin)
+                    st.markdown(analysis)
             
 
 if __name__ == "__main__":
