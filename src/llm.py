@@ -4,7 +4,6 @@ from src.db import Database
 from typing import Optional, List
 from pydantic import BaseModel, Field
 from langchain_core.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI
 
 
 load_dotenv()
@@ -42,7 +41,7 @@ def format_competitors(db, parent_asin):
 
 def analyze_competitors(asin):
     from langchain_openai import ChatOpenAI
-    from langchain.prompts import PromptTemplate
+    from langchain_core.prompts import PromptTemplate
     from langchain_core.output_parsers import PydanticOutputParser
 
     db = Database()
@@ -72,7 +71,7 @@ def analyze_competitors(asin):
         partial_variables={"format_instructions": parser.get_format_instructions()}
     )
 
-    llm = ChatOpenAI(model="gpt-4", temperature=0)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
     chain = prompt | llm | parser
 

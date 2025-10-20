@@ -3,6 +3,9 @@ from src.oxylabs_client import scrape_product_details
 from src.services import scrape_and_store_product, fetch_and_store_competitors
 from src.db import Database
 from src.llm import analyze_competitors
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def render_header():
     st.title("Amazon Compeittive Analysis Tool")
