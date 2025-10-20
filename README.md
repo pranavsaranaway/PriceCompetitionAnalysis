@@ -1,6 +1,6 @@
 # PriceCompetitionAnalysis
 
-A Python tool for analyzing products and their competitors on e-commerce platforms like Amazon. It scrapes product data, performs competitor analysis, and generates actionable insights using OpenAI GPT models.
+A Python tool for analyzing products and their competitors on e-commerce platforms like Amazon. It scrapes product data, performs competitor analysis, and generates actionable insights using OpenAI GPT models. **We use Oxylabs to ethically scrape the data.**
 
 ---
 
