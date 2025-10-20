@@ -1,5 +1,7 @@
 import streamlit as st
-from src.oxylabs_client import scrape_procut_details
+from src.oxylabs_client import scrape_product_details
+from src.services import scrape_and_store_product, fetch_and_store_competitors
+from src.db import Database
 
 def render_header():
     st.title("Amazon Compeittive Analysis Tool")
@@ -48,9 +50,60 @@ def main():
 
     if st.button("Scrape Product") and asin:
         with st.spinner("Scraping product..."):
-            product = scrape_procut_details(asin, geo, domain)
+            scrape_and_store_product(asin, geo, domain)
         st.success("Product scraped successfully!")
-        render_product_card(product)
+    
+    db = Database()
+    products = db.get_all_products()
+    if products:
+        st.divider()
+        st.subheader("Scraped Products")
+        
+        items_per_page = 10
+        total_pages = (len(products) + items_per_page - 1) // items_per_page
+
+        col1,col2,col3 = st.columns([2,3,2])
+        with col2:
+            page = st.number_input("Page", min_value=1, max_value=total_pages, value=1) - 1
+        
+        start_idx = page * items_per_page
+        end_idx = min(start_idx + items_per_page,len(products))
+
+        st.write(f"Showing {start_idx + 1} - {end_idx} of {len(products)} products")
+
+        for p in products[start_idx:end_idx]:
+            render_product_card(p)
+
+
+
+    selected_asin = st.session_state.get('analyzing_asin')
+    if selected_asin:
+        st.divider()
+        st.subheader(f"Competitior analysis for {selected_asin}")
+
+        db = Database()
+        existing_comps = db.search_products({"parent_asin": selected_asin})
+
+        if not existing_comps:
+            with st.spinner("Fetching and storing competitors..."):
+                comps = fetch_and_store_competitors(selected_asin, domain, geo)
+            
+            st.success(f"Found {len(comps)} competitors!")
+        else:
+            st.info(f"Found {len(existing_comps)} existing competitors in the database.")
+
+        col1,col2 = st.columns([3,1])
+        with col2:
+            if st.button("refresh compeititors"):
+                with st.spinner("refreshing..."):
+                    comps = fetch_and_store_competitors(selected_asin, domain, geo)
+                st.success(f"Found {len(comps)} competitors!")
+
+        with col1:
+            if st.button("Analyse with LLM", type="primary"):
+                with st.spinner("Analyzing with LLM..."):
+                    st.text("analysis")
+            
 
 if __name__ == "__main__":
     main()
