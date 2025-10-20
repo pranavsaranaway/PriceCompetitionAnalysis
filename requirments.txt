@@ -1,0 +1,7 @@
+dotenv
+langchain
+langchain-core
+langchain-openai
+langchain
+tinydb
+openai
